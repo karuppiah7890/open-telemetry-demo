@@ -239,3 +239,380 @@ If you notice, for `30`, it just timed out. This is because I had set a time
 out for all client requests - `10 seconds`. Looks like the first request that
 got sent for `29` sequence number took a lot of time, more than 10 seconds and
 hence everything just failed.
+
+Now, I want to see how to incorporate open telemetry in this!
+
+Checking this
+
+https://github.com/open-telemetry/opentelemetry-go
+
+And there's an example here
+
+https://github.com/open-telemetry/opentelemetry-go/blob/master/example/README.md
+
+So I cloned the source code in my local
+
+```bash
+$ git clone git@github.com:open-telemetry/opentelemetry-go.git
+```
+
+Ran the server
+
+```bash
+$ cd opentelemetry-go/example/http
+$ go run server/server.go
+```
+
+And ran the client too
+
+```bash
+$ cd opentelemetry-go/example/http
+$ go run client/client.go
+```
+
+I could see the following output in the server
+
+```bash
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "e706a775c8091a82",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "29d24de648b1d82d",
+	"SpanKind": 1,
+	"Name": "hello",
+	"StartTime": "2020-06-12T08:11:50.127696+05:30",
+	"EndTime": "2020-06-12T08:11:50.127727324+05:30",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GET"
+			}
+		},
+		{
+			"Key": "http.target",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/hello"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.host",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost:7777"
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "Go-http-client/1.1"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.transport",
+			"Value": {
+				"Type": "STRING",
+				"Value": "IP.TCP"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "[::1]"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 49417
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 7777
+			}
+		}
+	],
+	"MessageEvents": [
+		{
+			"Name": "handling this...",
+			"Attributes": null,
+			"Time": "2020-06-12T08:11:50.127709+05:30"
+		}
+	],
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": true,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 0,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "example/server",
+		"Version": ""
+	}
+}
+```
+
+I could see the following output in the client side
+
+```bash
+Sending request...
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "a92a391549494e17",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "fcd38a851a862f69",
+	"SpanKind": 3,
+	"Name": "http.dns",
+	"StartTime": "2020-06-12T08:11:50.122266+05:30",
+	"EndTime": "2020-06-12T08:11:50.125720277+05:30",
+	"Attributes": [
+		{
+			"Key": "http.host",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		}
+	],
+	"MessageEvents": null,
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": false,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 0,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/otel/instrumentation/httptrace",
+		"Version": ""
+	}
+}
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "e5756a90f465aac7",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "fcd38a851a862f69",
+	"SpanKind": 3,
+	"Name": "http.connect",
+	"StartTime": "2020-06-12T08:11:50.126454+05:30",
+	"EndTime": "2020-06-12T08:11:50.126896362+05:30",
+	"Attributes": [
+		{
+			"Key": "http.remote",
+			"Value": {
+				"Type": "STRING",
+				"Value": "[::1]:7777"
+			}
+		}
+	],
+	"MessageEvents": null,
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": false,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 0,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/otel/instrumentation/httptrace",
+		"Version": ""
+	}
+}
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "fcd38a851a862f69",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "29d24de648b1d82d",
+	"SpanKind": 3,
+	"Name": "http.getconn",
+	"StartTime": "2020-06-12T08:11:50.122146+05:30",
+	"EndTime": "2020-06-12T08:11:50.127134248+05:30",
+	"Attributes": [
+		{
+			"Key": "http.host",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost:7777"
+			}
+		},
+		{
+			"Key": "http.remote",
+			"Value": {
+				"Type": "STRING",
+				"Value": "[::1]:7777"
+			}
+		},
+		{
+			"Key": "http.local",
+			"Value": {
+				"Type": "STRING",
+				"Value": "[::1]:49417"
+			}
+		}
+	],
+	"MessageEvents": null,
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": false,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 2,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/otel/instrumentation/httptrace",
+		"Version": ""
+	}
+}
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "8365d7df6d9f2c4b",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "29d24de648b1d82d",
+	"SpanKind": 3,
+	"Name": "http.send",
+	"StartTime": "2020-06-12T08:11:50.127347+05:30",
+	"EndTime": "2020-06-12T08:11:50.127352261+05:30",
+	"Attributes": null,
+	"MessageEvents": null,
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": false,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 0,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/otel/instrumentation/httptrace",
+		"Version": ""
+	}
+}
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "635882cda0da2883",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "29d24de648b1d82d",
+	"SpanKind": 3,
+	"Name": "http.receive",
+	"StartTime": "2020-06-12T08:11:50.12852+05:30",
+	"EndTime": "2020-06-12T08:11:50.128639383+05:30",
+	"Attributes": null,
+	"MessageEvents": null,
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": false,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 0,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/otel/instrumentation/httptrace",
+		"Version": ""
+	}
+}
+{
+	"SpanContext": {
+		"TraceID": "91285635bd7088d30a2aabfd2a48fa60",
+		"SpanID": "29d24de648b1d82d",
+		"TraceFlags": 1
+	},
+	"ParentSpanID": "0000000000000000",
+	"SpanKind": 1,
+	"Name": "say hello",
+	"StartTime": "2020-06-12T08:11:50.122029+05:30",
+	"EndTime": "2020-06-12T08:11:50.128762183+05:30",
+	"Attributes": null,
+	"MessageEvents": null,
+	"Links": null,
+	"StatusCode": 0,
+	"StatusMessage": "",
+	"HasRemoteParent": false,
+	"DroppedAttributeCount": 0,
+	"DroppedMessageEventCount": 0,
+	"DroppedLinkCount": 0,
+	"ChildSpanCount": 4,
+	"Resource": null,
+	"InstrumentationLibrary": {
+		"Name": "example/client",
+		"Version": ""
+	}
+}
+Response Received: Hello, world!
+
+
+
+Waiting for few seconds to export spans ...
+
+Inspect traces on stdout
+```
+
+So, it said the traces will be on the standard output, the console, in the order
+they were exported.
+
+Now I need to check the code and then understand what the above output means!
+
+I read the code. I can understand to some extent what they are doing. As in,
+the functions they call. But I don't get the meaning of the functions or why
+they are called. I can only understand the basics of the code.
+
+Digging in, I can see that the open telemetry specification can help me in this
+regard. So, I'm reading that now!
+
+https://github.com/open-telemetry/opentelemetry-specification
+
+Starting with the overview here
+
+https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/overview.md
