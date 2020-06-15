@@ -616,3 +616,73 @@ https://github.com/open-telemetry/opentelemetry-specification
 Starting with the overview here
 
 https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/overview.md
+
+---
+
+Okay, so, looking at the overview, I understood some basics. What's a trace,
+what's a span, what's span context, trace ID, span ID, parent ID etc.
+
+And there were more stuff, which I didn't completely understand, but that's
+fine. I'll get to it later I guess, when the time comes.
+
+I tried read the spans again this time. It made more sense. Also, when I looked
+at the names of the spans at the `Name` field, I could understand better!
+
+So, the client has the following names in it's spans
+
+```
+http.dns
+http.connect
+http.getconn
+http.send
+http.receive
+say hello
+```
+
+And the server has this one name in it's one span
+
+```
+hello
+```
+
+Now, it kind of makes sense about what that many spans were all about.
+And then there's this attributes field, which also gives some extra information
+about each span. Like, for dns it has details about the dns name that was
+resolved.
+
+For `hello` on the server side, it had attributes like what's the request method,
+what's the transport protocol (TCP) and then version of http, http scheme - http,
+and then URL path `/hello`, user agent, server host and port, client host and
+port.
+
+Similarly for other spans too, there were appropriate attributes! :) 
+
+Now, I gotta see how to do this in my fibonacci program and also export it to
+some place to visualize this cool thing - traces and spans.
+
+I read the client and server code. I noticed what they do.
+
+In the client code, they first initialize a tracer, that is - create an exporter,
+in this case it was a stdout exporter and then create a trace provider using the
+exporter and set it as the global trace provider. And something about sampling,
+where sampling is always done. And then they create a correlation context which
+I can't find in the span output. Then the client creates a span, with a name
+and then some stuff is injected into the request. I think this stuff includes
+span context, attributes and correlation related entries.
+
+After that the client sends the request!
+
+In the server code, it extracts some stuff from the client's request. This is
+the same stuff client injected into the request - span context, correlation
+related entries and attributes. It then creates a req with the correlation
+details (not sure what this part is). And then a span is started / created!
+It's given a name and attributes and the remote span context from the client
+so that the span that is created gets a parent span ID based on the client's
+span details. There's also an event that's added to the span and then the
+response is sent and the span is ended.
+
+Now, I need to learn how to use some visualization like Jaegar, Zipkin. Actually,
+check if I'm even right about these tools. There's also some tool called
+open telemetry collector. Gotta see what that is.
+
+
