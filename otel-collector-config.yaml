@@ -1,0 +1,39 @@
+# Open Telemetry Collector Config
+# Based on the example in the below links
+# https://github.com/open-telemetry/opentelemetry-collector/blob/master/examples/k8s.yaml#L106
+# https://opentelemetry.io/docs/collector/configuration/#exporters
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: 0.0.0.0:1777
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+receivers:
+  otlp: {}
+
+processors:
+  batch:
+  queued_retry:
+
+exporters:
+  logging:
+  
+  jaeger:
+    endpoint: "localhost:14250"
+    insecure: true
+
+service:
+
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, queued_retry]
+      exporters: [logging, jaeger]
+
+    metrics:
+      receivers: [otlp]
+      exporters: [logging]
+
+  extensions: [health_check, pprof, zpages]

@@ -693,4 +693,15 @@ https://docs.google.com/presentation/d/1nVhLIyqn_SiDo78jFHxnMdxYlnT0b7tYOHz3Pu4g
 This workshop material is really sleek and good! I think I could use this if I'm
 going to give a talk on it ;) :D
 
+---
+
+Okay, so I got stuck looking for how to export to open collector. I did look
+for different example code in different places. Today I spent a lot of time
+trying to make the example in this repo work
+
+https://github.com/open-telemetry/opentelemetry-collector/tree/master/examples
+
+Finally I realized there's an example for collector export in this
+repo itself
+
 

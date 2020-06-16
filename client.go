@@ -2,11 +2,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"go.opentelemetry.io/otel/plugin/httptrace"
 )
 
 // FibonacciClient represents a client
@@ -31,7 +34,7 @@ func NewFibonacciClient() FibonacciClient {
 // FibonacciNumber returns the fibonacci number
 // given the sequence number n by contacting the
 // fibonacci service
-func (f FibonacciClient) FibonacciNumber(sequenceNumber int) (int, error) {
+func (f FibonacciClient) FibonacciNumber(ctx context.Context, sequenceNumber int) (int, error) {
 	fibonacciReq := FibonacciRequest{SequenceNumber: sequenceNumber}
 	data, err := json.Marshal(fibonacciReq)
 	if err != nil {
@@ -45,6 +48,9 @@ func (f FibonacciClient) FibonacciNumber(sequenceNumber int) (int, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	ctx, req = httptrace.W3C(ctx, req)
+	httptrace.Inject(ctx, req)
 
 	resp, err := f.httpClient.Do(req)
 	if err != nil {
