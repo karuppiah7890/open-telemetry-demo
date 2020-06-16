@@ -685,4 +685,12 @@ Now, I need to learn how to use some visualization like Jaegar, Zipkin. Actually
 check if I'm even right about these tools. There's also some tool called
 open telemetry collector. Gotta see what that is.
 
+Okay, now I'm checking this out -
+
+https://opentelemetry.io/docs/workshop/resources/
+https://docs.google.com/presentation/d/1nVhLIyqn_SiDo78jFHxnMdxYlnT0b7tYOHz3Pu4gzVQ/edit#slide=id.g80f778c091_0_156
+
+This workshop material is really sleek and good! I think I could use this if I'm
+going to give a talk on it ;) :D
+
 
