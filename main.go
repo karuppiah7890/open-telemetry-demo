@@ -24,53 +24,55 @@ func main() {
 		fmt.Fprintf(w, "pong")
 	})
 
-	http.HandleFunc("/fibonacci", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		reqContentType := r.Header.Get("Content-Type")
-		if reqContentType != "application/json" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-		defer r.Body.Close()
-
-		var fibonacciReq FibonacciRequest
-		err = json.Unmarshal(body, &fibonacciReq)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-
-		result, err := fibonacciNumber(fibonacciReq.SequenceNumber)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-
-		fibonacciRes := FibonacciResponse{FibonacciNumber: result}
-		jsonResponse, err := json.Marshal(fibonacciRes)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonResponse)
-	})
+	http.HandleFunc("/fibonacci", fibonacciHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		panic(err)
 	}
+}
+
+func fibonacciHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	reqContentType := r.Header.Get("Content-Type")
+	if reqContentType != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer r.Body.Close()
+
+	var fibonacciReq FibonacciRequest
+	err = json.Unmarshal(body, &fibonacciReq)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	result, err := fibonacciNumber(fibonacciReq.SequenceNumber)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	fibonacciRes := FibonacciResponse{FibonacciNumber: result}
+	jsonResponse, err := json.Marshal(fibonacciRes)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonResponse)
 }
 
 // fibonacciNumber returns the fibonacci number
