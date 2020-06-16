@@ -704,4 +704,72 @@ https://github.com/open-telemetry/opentelemetry-collector/tree/master/examples
 Finally I realized there's an example for collector export in this
 repo itself
 
+So, I was able to make the whole thing work! I ran the open telemetry collector
+with a config yaml file and I also ran jaeger and I wrote code to export the
+traces to open telemetry collector and from there to jaeger and I was able to
+check the output in the jaeger UI ! :D 
+
+I still need to understand more about how some things work. I'm getting there.
+For example, how's the span started and ended - I'm guessing the handler 
+function wrapper is doing that part and the propagation of context, well that
+too is done by the wrapper, but the wrapper can only extract context from the
+request, someone has to inject the context, I did that in the http client calls,
+so all good. And then how things like open telemetry collector receivers,
+exporters, extensions, processors and services work. And the same for all the
+Jaeger components - the UI, the agent / collector.
+
+And how do other components fit in. Like zipkin, prometheus. I did notice some
+weird errors while doing some weird stuff. Like, open telemetry collector could
+listen at the ports jaeger usually listens at - what does that mean, does it
+mean it can act as a collector for the jaeger trace format? Looks like so, I
+read something like that somewhere. I found this cool link about Jaegar and Open
+Telemetry which I need to read -
+
+https://medium.com/jaegertracing/jaeger-and-opentelemetry-1846f701d9f2
+
+And the cool articles by this person
+
+https://medium.com/@YuriShkuro
+
+And I noticed that I cannot export the metrics to jaeger, because it doesn't
+support it. I don't know how all that is know by the open telemetry collector,
+anyways, it's clear that I need to understand how to configure it!
+
+The final output did look awesome! :D I even added an extra attribute in the
+spans to tell which sequence number is being processed during the span! :D
+
+Some screenshots -
+
+Trace list
+
+![Trace List](images/trace-list.png "Trace List")
+
+![Trace List 2](images/trace-list-2.png "Trace List 2")
+
+
+Some pages of traces
+
+![Trace 1](images/trace-1.png "Trace 1")
+
+![Trace 2](images/trace-2.png "Trace 2")
+
+You can select spans in traces
+
+![Span select](images/span-select.png "Span select")
+
+You can also check the attributes of a span
+
+![Span attributes](images/span-attributes.png "Span attributes")
+
+You can compare traces!
+
+![Trace compare](images/trace-compare.png "Trace compare")
+
+I'm still trying to understand how the compare works. But I saw this video of
+new relic showing some comparisons, like based on average of all the values in
+many traces and it was awesome! :D 
+
+"Microservices and Distributed Tracing"
+
+https://www.youtube.com/watch?v=WqMLZF0_Tzc
 
